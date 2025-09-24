@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Estilos base para el modo oscuro (por defecto) */
+        body {
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        .chat-container {
+            background-color: #2d3748;
+        }
+        .header, .input-area {
+            background-color: #1a202c;
+            border-color: #4a5568;
+        }
+        .user-input {
+            background-color: #4a5568;
+            color: #e2e8f0;
+            placeholder-color: #a0aec0;
+        }
+        .bot-message-bubble {
+            background-color: #2d3748;
+        }
+        
+        /* Estilos para el modo claro */
+        body.light-mode {
+            background-color: #f7fafc;
+            color: #2d3748;
+        }
+        .light-mode .chat-container {
+            background-color: #e2e8f0;
+        }
+        .light-mode .header, .light-mode .input-area {
+            background-color: #cbd5e0;
+            border-color: #a0aec0;
+        }
+        .light-mode .user-input {
+            background-color: #e2e8f0;
+            color: #2d3748;
+            placeholder-color: #4a5568;
+        }
+        .light-mode .bot-message-bubble {
+            background-color: #ffffff;
+            color: #2d3748;
+        }
+        
+        /* Pantalla de carga */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #1a202c;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            animation: fadeOut 2.5s ease-in-out forwards;
+            animation-delay: 1s;
+        }
+
+        .loader-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            transform: scale(0.8);
+        }
+
+        .shape-cube, .shape-triangle, .shape-circle {
+            position: absolute;
+            opacity: 0;
+            animation-duration: 2s;
+            animation-timing-function: cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            animation-fill-mode: forwards;
+        }
+
+        .shape-cube {
+            width: 50px;
+            height: 50px;
+            background-color: #e67e22; /* Naranja */
+            top: 50%;
+            left: 50%;
+            margin-top: -25px;
+            margin-left: -25px;
+            border-radius: 8px;
+            animation-name: assemble-cube;
+            animation-delay: 0.2s;
+        }
+
+        .shape-triangle {
+            width: 0;
+            height: 0;
+            border-left: 25px solid transparent;
+            border-right: 25px solid transparent;
+            border-bottom: 43.3px solid #3498db; /* Azul */
+            top: 50%;
+            left: 50%;
+            margin-left: -25px;
+            margin-top: -43.3px;
+            animation-name: assemble-triangle;
+            animation-delay: 0.4s;
+        }
+
+        .shape-circle {
+            width: 50px;
+            height: 50px;
+            background-color: #2ecc71; /* Verde */
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            margin-top: 10px;
+            margin-left: -25px;
+            animation-name: assemble-circle;
+            animation-delay: 0.6s;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        @keyframes assemble-cube {
+            0% { transform: translateX(-150px) rotate(45deg); opacity: 0; }
+            100% { transform: translateX(0) rotate(0); opacity: 1; }
+        }
+        @keyframes assemble-triangle {
+            0% { transform: translateY(-150px) rotate(-90deg); opacity: 0; }
+            100% { transform: translateY(0) rotate(0); opacity: 1; }
+        }
+        @keyframes assemble-circle {
+            0% { transform: translateX(150px) rotate(180deg); opacity: 0; }
+            100% { transform: translateX(0) rotate(0); opacity: 1; }
+        }
+
+        /* Burbujas de chat */
+        .chat-message.user {
+            justify-content: flex-end;
+        }
+
+        .chat-message.bot {
+            justify-content: flex-start;
+        }
+
+        .chat-message.user .message-bubble {
+            background-color: #4f46e5;
+            color: white;
+            border-bottom-right-radius: 0;
+        }
+
+        .chat-message.bot .message-bubble {
+            background-color: #7b3238;
+            color: #e2e8f0;
+            border-bottom-left-radius: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Pantalla de carga -->
+    <div id="loader">
+        <div class="loader-container">
+            <div class="shape-cube"></div>
+            <div class="shape-triangle"></div>
+            <div class="shape-circle"></div>
+        </div>
+    </div>
+
+    <!-- Contenedor principal ajustado a toda la página -->
+    <div class="flex flex-col h-screen w-full bg-gray-800 chat-container">
+        <!-- Encabezado -->
+        <header class="p-4 bg-gray-900 border-b border-gray-700 flex items-center header justify-center">
+            <div class="w-full h-20 flex justify-center">
+                <!-- Logo rectangular con URL, mantiene la proporción -->
+                <img src="https://i.ibb.co/FPxyy7f/Proyecto-nuevo.png" alt="Logo de la empresa" class="h-full object-contain">
+            </div>
+            <!-- Botón para modo claro/oscuro -->
+            <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-700 transition-colors duration-200">
+                <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 hidden">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.27-2.618.774-3.805A9.73 9.73 0 001.5 10.5c0 5.385 4.365 9.75 9.75 9.75 2.553 0 4.93-1.04 6.666-2.738z" />
+                </svg>
+                <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 hidden">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 21v-2.25m-6.364-.386l1.591-1.591M3 12H5.25m-.386-6.364l1.591 1.591" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Área de chat -->
+        <main id="chat-container" class="flex-grow p-4 space-y-4 overflow-y-auto custom-scrollbar">
+            <!-- Los mensajes se agregarán aquí -->
+        </main>
+
+        <!-- Formulario de entrada -->
+        <div class="p-4 bg-gray-900 border-t border-gray-700 input-area">
+            <div class="flex items-center space-x-2">
+                <input type="text" id="user-input" placeholder="Escribe tu mensaje..."
+                    class="flex-grow p-3 rounded-full user-input focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200">
+                <button id="send-button"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white p-3 rounded-full shadow-lg transition-all duration-200 transform active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loader = document.getElementById('loader');
+            const chatContainer = document.getElementById('chat-container');
+            const sendButton = document.getElementById('send-button');
+            const userInput = document.getElementById('user-input');
+            const themeToggle = document.getElementById('theme-toggle');
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+
+            // Historial de conversación para la API
+            let chatHistory = [];
+            
+            // Constantes para la API de Gemini
+            const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=';
+            const apiKey = ''; // El entorno de ejecución proporcionará la clave API
+
+            // Oculta la pantalla de carga después de la animación
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 3500);
+            
+            // Función para detectar la preferencia de tema del sistema
+            function detectThemePreference() {
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                    document.body.classList.add('light-mode');
+                    sunIcon.classList.remove('hidden');
+                    moonIcon.classList.add('hidden');
+                } else {
+                    document.body.classList.remove('light-mode');
+                    sunIcon.classList.add('hidden');
+                    moonIcon.classList.remove('hidden');
+                }
+            }
+            
+            // Función para cambiar de tema manualmente
+            function toggleTheme() {
+                document.body.classList.toggle('light-mode');
+                sunIcon.classList.toggle('hidden');
+                moonIcon.classList.toggle('hidden');
+            }
+
+            // Detecta el tema inicial
+            detectThemePreference();
+            
+            sendButton.addEventListener('click', sendMessage);
+            userInput.addEventListener('keypress', handleKeyPress);
+            themeToggle.addEventListener('click', toggleTheme);
+
+            function handleKeyPress(event) {
+                if (event.key === 'Enter') {
+                    sendMessage();
+                }
+            }
+
+            async function sendMessage() {
+                const message = userInput.value.trim();
+                if (message === '') return;
+
+                // Añade el mensaje del usuario al chat y al historial
+                appendMessage(message, 'user');
+                chatHistory.push({ role: 'user', parts: [{ text: message }] });
+                userInput.value = '';
+
+                // Muestra un mensaje de carga del bot
+                const loadingMessage = appendMessage('...', 'bot', true);
+
+                try {
+                    // Crea el payload de la solicitud con el historial de chat completo
+                    const payload = {
+                        contents: chatHistory,
+                    };
+
+                    const response = await fetch(API_URL + apiKey, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Error de la API: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    // Extrae la respuesta del bot y la añade al chat y al historial
+                    const botResponse = result.candidates[0].content.parts[0].text;
+                    updateMessage(loadingMessage, botResponse);
+                    chatHistory.push({ role: 'model', parts: [{ text: botResponse }] });
+
+                } catch (error) {
+                    console.error('Error al obtener la respuesta del bot:', error);
+                    updateMessage(loadingMessage, 'Lo siento, ha ocurrido un error. Por favor, inténtalo de nuevo.');
+                }
+            }
+
+            function appendMessage(message, sender, isLoading = false) {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('flex', 'items-end', 'space-x-2', 'chat-message');
+                
+                if (sender === 'user') {
+                    messageDiv.classList.add('user');
+                } else {
+                    messageDiv.classList.add('bot');
+                }
+
+                const profilePic = document.createElement('img');
+                profilePic.classList.add('w-12', 'h-12', 'rounded-full', 'object-cover', 'flex-shrink-0');
+                if (sender === 'user') {
+                    profilePic.src = "https://placehold.co/100x100/A0AEC0/FFFFFF?text=Yo";
+                    profilePic.alt = "Tu Perfil";
+                } else {
+                    profilePic.src = "https://i.ibb.co/chwxgYhY/New-Project-1.png";
+                    profilePic.alt = "Perfil del Bot";
+                }
+
+                const messageBubble = document.createElement('div');
+                messageBubble.classList.add('message-bubble', 'p-4', 'rounded-lg', 'max-w-xs', 'shadow');
+                messageBubble.innerText = message;
+                
+                if (sender === 'user') {
+                    messageDiv.appendChild(messageBubble);
+                    messageDiv.appendChild(profilePic);
+                } else {
+                    messageDiv.appendChild(profilePic);
+                    messageDiv.appendChild(messageBubble);
+                }
+
+                chatContainer.appendChild(messageDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                return messageBubble; // Devuelve el elemento para poder actualizarlo
+            }
+            
+            function updateMessage(messageElement, newText) {
+                messageElement.innerText = newText;
+            }
+        });
+    </script>
+
+</body>
+</html>
