@@ -13,6 +13,12 @@
             transition: background-color 0.3s ease;
         }
 
+        /* Variables de color personalizadas (Marrón Granate) */
+        :root {
+            --color-primary: #7B2433; /* El color principal del acento (Marrón Granate) */
+            --color-primary-dark: #601C27; /* Variante más oscura para hover/sombras */
+        }
+
         /* Estilos base para el modo oscuro (por defecto) */
         body {
             background-color: #1a202c;
@@ -87,10 +93,11 @@
             animation-fill-mode: forwards;
         }
 
+        /* El cubo (que era naranja) ahora usa el color primario Marrón Granate */
         .shape-cube {
             width: 50px;
             height: 50px;
-            background-color: #e67e22; /* Naranja */
+            background-color: var(--color-primary); /* Nuevo Color */
             top: 50%;
             left: 50%;
             margin-top: -25px;
@@ -100,6 +107,7 @@
             animation-delay: 0.2s;
         }
 
+        /* Mantenemos los otros colores del loader para contraste */
         .shape-triangle {
             width: 0;
             height: 0;
@@ -156,8 +164,9 @@
             justify-content: flex-start;
         }
 
+        /* Burbuja del usuario con el nuevo color Marrón Granate */
         .chat-message.user .message-bubble {
-            background-color: #4f46e5;
+            background-color: var(--color-primary);
             color: white;
             border-bottom-right-radius: 0;
         }
@@ -197,10 +206,10 @@
                 <h2 class="text-2xl font-semibold mb-4 text-white light-mode:text-gray-900">Activar Chatbot</h2>
                 <p class="mb-6 text-gray-400 light-mode:text-gray-600">Introduce tu clave de API de Gemini para iniciar la conversación.</p>
                 <input type="password" id="api-key-input" placeholder="Ingresa tu clave de API aquí..."
-                    class="w-full p-3 mb-4 rounded-lg bg-gray-800 light-mode:bg-gray-100 text-white light-mode:text-gray-900 border border-gray-600 light-mode:border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    class="w-full p-3 mb-4 rounded-lg bg-gray-800 light-mode:bg-gray-100 text-white light-mode:text-gray-900 border border-gray-600 light-mode:border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#7B2433]"> <!-- Anillo de enfoque -->
                 
                 <button id="submit-key-button"
-                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg shadow transition-all duration-200 transform active:scale-95 mb-4">
+                    class="w-full bg-[#7B2433] hover:bg-[#601C27] text-white font-bold py-3 px-4 rounded-lg shadow transition-all duration-200 transform active:scale-95 mb-4">
                     Iniciar Chat
                 </button>
 
@@ -258,7 +267,7 @@
             <div class="p-4 bg-gray-900 border-t border-gray-700 input-area">
                 <!-- Barra de Utilidades LLM -->
                 <div class="flex flex-wrap justify-start space-x-3 mb-3">
-                    <button id="summarize-button" class="flex items-center feature-button text-sm font-medium bg-indigo-500 hover:bg-indigo-400 text-white py-2 px-3 rounded-full transition duration-150">
+                    <button id="summarize-button" class="flex items-center feature-button text-sm font-medium bg-[#7B2433] hover:bg-[#601C27] text-white py-2 px-3 rounded-full transition duration-150">
                         <span class="mr-1">✨</span> Resumir Chat
                     </button>
                     <button id="formalize-button" class="flex items-center feature-button text-sm font-medium bg-gray-600 hover:bg-gray-500 text-white py-2 px-3 rounded-full transition duration-150">
@@ -268,9 +277,9 @@
 
                 <div class="flex items-center space-x-2">
                     <input type="text" id="user-input" placeholder="Escribe tu mensaje..."
-                        class="flex-grow p-3 rounded-full user-input focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200">
+                        class="flex-grow p-3 rounded-full user-input focus:outline-none focus:ring-2 focus:ring-[#7B2433] transition-all duration-200"> <!-- Anillo de enfoque -->
                     <button id="send-button"
-                        class="bg-indigo-600 hover:bg-indigo-700 text-white p-3 rounded-full shadow-lg transition-all duration-200 transform active:scale-95">
+                        class="bg-[#7B2433] hover:bg-[#601C27] text-white p-3 rounded-full shadow-lg transition-all duration-200 transform active:scale-95">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                         </svg>
@@ -302,8 +311,8 @@
             // Variable global para almacenar la API Key
             let currentApiKey = null;
             let chatHistory = [];
-            // Modelo por defecto: 'gemma-3n-e4b-it'
-            const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemma-3n-e4b-it:generateContent?key=';
+            // CAMBIO CRUCIAL: Usamos el modelo más estable para chat con historial.
+            const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=';
 
             // --- Funciones de Interfaz y Tema ---
 
@@ -503,13 +512,30 @@
                     const result = await response.json();
                     
                     // Extrae la respuesta del bot y la añade al chat y al historial
-                    const botResponse = result.candidates[0].content.parts[0].text;
-                    updateMessage(loadingMessage, botResponse);
-                    chatHistory.push({ role: 'model', parts: [{ text: botResponse }] });
+                    // Manejo de la respuesta para asegurar que no falle si la estructura es inesperada
+                    const botResponse = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                    if (botResponse) {
+                        updateMessage(loadingMessage, botResponse);
+                        // SOLO AÑADIR AL HISTORIAL SI LA RESPUESTA ES VÁLIDA
+                        chatHistory.push({ role: 'model', parts: [{ text: botResponse }] });
+                    } else {
+                         // Manejar caso de respuesta vacía o error del modelo (a pesar del 200/no-400)
+                        console.error('Respuesta del modelo vacía o incompleta:', result);
+                        updateMessage(loadingMessage, 'El modelo devolvió una respuesta vacía o incompleta. Intenta otra pregunta.');
+                    }
+
 
                 } catch (error) {
                     console.error('Error al obtener la respuesta del bot:', error);
-                    updateMessage(loadingMessage, 'Lo siento, ha ocurrido un error. Hubo un problema con la API. Verifica tu clave.');
+                    // Proporcionar un mensaje más útil en caso de error 400 o 500
+                    let errorMessage = 'Lo siento, ha ocurrido un error de conexión con la API.';
+                    if (error.message.includes('400')) {
+                        errorMessage = 'Error 400 (Solicitud Incorrecta). Por favor, verifica tu clave de API o reinicia la conversación.';
+                    } else if (error.message.includes('500')) {
+                        errorMessage = 'Error del Servidor (500). Intenta de nuevo más tarde.';
+                    }
+                    updateMessage(loadingMessage, errorMessage);
                 }
             }
 
@@ -554,10 +580,7 @@
             
             function updateMessage(messageElement, newText) {
                 // 1. Convertir listas de Markdown (* o - al inicio de línea) a viñetas HTML (•).
-                // Esto garantiza que el * de la lista no se interprete como cursiva y añade un formato legible.
                 let formattedText = newText
-                    // Busca * o - al inicio de la línea (o del texto) y lo reemplaza por una viñeta.
-                    // $1 mantiene el salto de línea (\n) o el inicio del texto (^) para el siguiente paso.
                     .replace(/(\n|^)\s*([\*-])\s*(.*?)/g, '$1&bull; $3'); 
 
                 // 2. Aplicar formato HTML básico para negritas y cursivas (Énfasis)
