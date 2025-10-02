@@ -1,4 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* Importación de la fuente (ya no es necesaria la etiqueta style en HTML) */
+/* El HTML original lo maneja con un @import dentro de <style>, pero si lo manejas directamente
+   en el head del HTML como se indica en el HTML dividido, esta sección de @import en el CSS
+   podría eliminarse o mantenerse para mejor control */
+
+/* Reset de la fuente */
 body {
     font-family: 'Inter', sans-serif;
     transition: background-color 0.3s ease;
@@ -19,7 +24,11 @@ body {
 .user-input {
     background-color: #4a5568;
     color: #e2e8f0;
-    placeholder-color: #a0aec0;
+    /* Tailwind no tiene 'placeholder-color' directo,
+       esto es un ajuste CSS específico. */
+}
+.user-input::placeholder {
+    color: #a0aec0;
 }
 .bot-message-bubble {
     background-color: #2d3748;
@@ -40,7 +49,9 @@ body.light-mode {
 .light-mode .user-input {
     background-color: #e2e8f0;
     color: #2d3748;
-    placeholder-color: #4a5568;
+}
+.light-mode .user-input::placeholder {
+    color: #4a5568;
 }
 .light-mode .bot-message-bubble {
     background-color: #ffffff;
@@ -81,7 +92,7 @@ body.light-mode {
 .shape-cube {
     width: 50px;
     height: 50px;
-    background-color: #e67e22;
+    background-color: #e67e22; /* Naranja */
     top: 50%;
     left: 50%;
     margin-top: -25px;
@@ -96,7 +107,7 @@ body.light-mode {
     height: 0;
     border-left: 25px solid transparent;
     border-right: 25px solid transparent;
-    border-bottom: 43.3px solid #3498db;
+    border-bottom: 43.3px solid #3498db; /* Azul */
     top: 50%;
     left: 50%;
     margin-left: -25px;
@@ -108,7 +119,7 @@ body.light-mode {
 .shape-circle {
     width: 50px;
     height: 50px;
-    background-color: #2ecc71;
+    background-color: #2ecc71; /* Verde */
     border-radius: 50%;
     top: 50%;
     left: 50%;
@@ -153,8 +164,20 @@ body.light-mode {
     border-bottom-right-radius: 0;
 }
 
+/* El estilo de la burbuja del bot se hereda de las clases de dark/light mode,
+   pero se añade aquí para mantener la configuración de bordes. */
 .chat-message.bot .message-bubble {
-    background-color: #7b3238;
-    color: #e2e8f0;
     border-bottom-left-radius: 0;
+}
+.chat-message.bot .message-bubble:not(.light-mode *) {
+    background-color: #2d3748; /* Estilo por defecto (Dark Mode) */
+    color: #e2e8f0;
+}
+
+/* Estilo para los botones de las nuevas funcionalidades */
+.feature-button {
+    transition: background-color 0.2s, transform 0.1s;
+}
+.feature-button:active {
+    transform: scale(0.98);
 }
