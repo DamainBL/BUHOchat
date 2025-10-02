@@ -11,8 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let chatHistory = [];
     
     // Constantes para la API de Gemini
-    const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=';
-    const apiKey = ''; // El entorno de ejecución proporcionará la clave API
+    // const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=';
+    const API_URL = 'AIzaSyAxhy-MoXMeGWg51uYPrqgKwaq-w3PFBHA';
+    const apiKey = 'AIzaSyAxhy-MoXMeGWg51uYPrqgKwaq-w3PFBHA'; // El entorno de ejecución proporcionará la clave API
 
     // Oculta la pantalla de carga después de la animación
     setTimeout(() => {
@@ -133,4 +134,5 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateMessage(messageElement, newText) {
         messageElement.innerText = newText;
     }
+
 });
