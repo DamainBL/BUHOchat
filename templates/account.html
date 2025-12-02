@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Cuenta - UNAL Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #2c0404;
+            --primary-rose: #f43f5e;
+            --secondary-red: #dc2626;
+            --rose-light: #fda4af;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
+        }
+        .animate-shimmer {
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes spin-slow {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin-slow 8s linear infinite;
+        }
+        
+        @keyframes liquid-move-1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -40px) scale(1.2); }
+            50% { transform: translate(-20px, 20px) scale(0.9); }
+            75% { transform: translate(10px, -10px) scale(1.1); }
+        }
+        @keyframes liquid-move-2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(-40px, 30px) scale(0.9); }
+            50% { transform: translate(10px, -50px) scale(1.1); }
+            75% { transform: translate(-10px, 20px) scale(1.2); }
+        }
+        @keyframes liquid-move-3 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(20px, 50px) scale(1.1); }
+            50% { transform: translate(-30px, -10px) scale(1.2); }
+            75% { transform: translate(50px, 10px) scale(0.9); }
+        }
+        
+        .blob-1 { animation: liquid-move-1 14s infinite ease-in-out; }
+        .blob-2 { animation: liquid-move-2 16s infinite ease-in-out; }
+        .blob-3 { animation: liquid-move-3 18s infinite ease-in-out; }
+    </style>
+</head>
+<body class="min-h-screen bg-[var(--bg-dark)] text-white font-sans overflow-x-hidden relative">
+
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute rounded-full filter blur-3xl opacity-60 mix-blend-multiply bg-rose-700 w-[500px] h-[500px] top-[-10%] left-[-10%] blob-1"></div>
+        <div class="absolute rounded-full filter blur-3xl opacity-60 mix-blend-multiply bg-red-800 w-[450px] h-[450px] top-[40%] right-[-10%] blob-2"></div>
+        <div class="absolute rounded-full filter blur-3xl opacity-60 mix-blend-multiply bg-orange-700 w-[400px] h-[400px] bottom-[-10%] left-[20%] blob-3"></div>
+        <div class="absolute inset-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+    </div>
+
+    <main class="relative z-10 min-h-screen flex items-center justify-center p-4 md:p-8">
+        
+        <div id="profile-card" class="w-full max-w-5xl rounded-[2.5rem] bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[0_0_80px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col md:flex-row transition-opacity duration-800" style="opacity: 0;">
+          
+            <div class="w-full md:w-[380px] border-b md:border-b-0 md:border-r border-white/10 p-8 flex flex-col items-center justify-start relative bg-white/[0.02]">
+            
+                <div class="flex flex-col items-center w-full text-center mt-4">
+                    <div class="relative mb-6">
+                        <div class="absolute inset-0 rounded-full border border-rose-500/30 animate-spin-slow" style="animation-duration: 10s;"></div>
+                        <div class="absolute -inset-2 rounded-full border border-red-500/20 animate-spin-slow" style="animation-direction: reverse; animation-duration: 15s;"></div>
+                        
+                        <div class="w-32 h-32 rounded-full p-1 bg-gradient-to-br from-white/40 to-white/5 backdrop-blur-sm relative overflow-hidden">
+                            <img id="profile-avatar" src="https://ui-avatars.com/api/?name=Usuario&background=7b3238&color=fff" alt="Profile" class="w-full h-full rounded-full object-cover"/>
+                        </div>
+                        <div class="absolute bottom-1 right-1 w-5 h-5 bg-green-400 rounded-full border-4 border-[var(--bg-dark)]" title="Online"></div>
+                    </div>
+
+                    <h1 id="profile-name" class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-rose-200 to-rose-400 mb-2">
+                        Cargando...
+                    </h1>
+                    <p id="profile-role" class="text-rose-200/70 font-medium mb-6">Estudiante UNAL</p>
+
+                    <div class="flex gap-3 w-full justify-center">
+                        <a href="/" class="flex-1 py-2.5 rounded-xl bg-white text-rose-900 font-semibold text-sm shadow-lg shadow-white/10 flex items-center justify-center gap-2 transition-transform hover:scale-[1.03] active:scale-[0.97] no-underline">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            Inicio
+                        </a>
+                        <button id="logout-btn" class="p-2.5 rounded-xl bg-white/10 border border-white/20 text-white hover:bg-red-500/30 hover:border-red-500/50 transition-all hover:scale-[1.03] active:scale-[0.97]" title="Cerrar Sesión">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-1 p-8 md:p-12 relative overflow-hidden">
+            
+                <nav class="flex gap-8 border-b border-white/10 pb-4 mb-8">
+                    <button data-tab="about" class="tab-button relative text-sm font-medium transition-colors duration-300 capitalize pb-1 text-white">
+                        Información
+                        <div data-tab-indicator="about" class="tab-indicator absolute -bottom-[17px] left-0 right-0 h-[2px] bg-gradient-to-r from-rose-400 to-red-400 shadow-[0_0_10px_rgba(244,63,94,0.7)]"></div>
+                    </button>
+                    <button data-tab="activity" class="tab-button relative text-sm font-medium transition-colors duration-300 capitalize pb-1 text-white/40 hover:text-white/70">
+                        Actividad
+                        <div data-tab-indicator="activity" class="tab-indicator hidden absolute -bottom-[17px] left-0 right-0 h-[2px] bg-gradient-to-r from-rose-400 to-red-400 shadow-[0_0_10px_rgba(244,63,94,0.7)]"></div>
+                    </button>
+                    <button data-tab="settings" class="tab-button relative text-sm font-medium transition-colors duration-300 capitalize pb-1 text-white/40 hover:text-white/70">
+                        Ajustes
+                        <div data-tab-indicator="settings" class="tab-indicator hidden absolute -bottom-[17px] left-0 right-0 h-[2px] bg-gradient-to-r from-rose-400 to-red-400 shadow-[0_0_10px_rgba(244,63,94,0.7)]"></div>
+                    </button>
+                </nav>
+
+                <div id="tab-content">
+                    <div data-content="about" class="tab-content transition-opacity duration-300">
+                      
+                        <div class="grid grid-cols-3 gap-4 mb-8">
+                            <div class="flex flex-col items-center justify-center p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.07] transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-2 text-rose-300"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                <span id="stat-conversations" class="text-xl font-bold text-white">0</span>
+                                <span class="text-xs text-white/40 uppercase tracking-wide">Conversaciones</span>
+                            </div>
+                            <div class="flex flex-col items-center justify-center p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.07] transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-2 text-rose-300"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                <span id="stat-member-since" class="text-xl font-bold text-white">Nuevo</span>
+                                <span class="text-xs text-white/40 uppercase tracking-wide">Miembro</span>
+                            </div>
+                            <div class="flex flex-col items-center justify-center p-4 rounded-2xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.07] transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-2 text-rose-300"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                <span class="text-xl font-bold text-white">Activo</span>
+                                <span class="text-xs text-white/40 uppercase tracking-wide">Estado</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="relative group overflow-hidden rounded-2xl bg-white/5 border border-white/10 p-4 transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                                <div class="flex items-center gap-4 relative z-10">
+                                    <div class="p-2.5 rounded-xl bg-gradient-to-br from-rose-500/20 to-red-500/20 text-rose-200 group-hover:text-white transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.83 1.83 0 0 1-2.06 0L2 7"/></svg>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-xs text-rose-200/60 font-medium uppercase tracking-wider">Correo Electrónico</p>
+                                        <p id="profile-email" class="text-white font-medium truncate">cargando...</p>
+                                    </div>
+                                </div>
+                                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
+                            </div>
+                            
+                            <div class="relative group overflow-hidden rounded-2xl bg-white/5 border border-white/10 p-4 transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                                <div class="flex items-center gap-4 relative z-10">
+                                    <div class="p-2.5 rounded-xl bg-gradient-to-br from-rose-500/20 to-red-500/20 text-rose-200 group-hover:text-white transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-xs text-rose-200/60 font-medium uppercase tracking-wider">Universidad</p>
+                                        <p class="text-white font-medium truncate">Universidad Nacional de Colombia</p>
+                                    </div>
+                                </div>
+                                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
+                            </div>
+                            
+                            <div class="relative group overflow-hidden rounded-2xl bg-white/5 border border-white/10 p-4 transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                                <div class="flex items-center gap-4 relative z-10">
+                                    <div class="p-2.5 rounded-xl bg-gradient-to-br from-rose-500/20 to-red-500/20 text-rose-200 group-hover:text-white transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-xs text-rose-200/60 font-medium uppercase tracking-wider">Dominio</p>
+                                        <p class="text-white font-medium truncate">@unal.edu.co</p>
+                                    </div>
+                                </div>
+                                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
+                            </div>
+                            
+                            <div class="relative group overflow-hidden rounded-2xl bg-white/5 border border-white/10 p-4 transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                                <div class="flex items-center gap-4 relative z-10">
+                                    <div class="p-2.5 rounded-xl bg-gradient-to-br from-rose-500/20 to-red-500/20 text-rose-200 group-hover:text-white transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-xs text-rose-200/60 font-medium uppercase tracking-wider">Cuenta Verificada</p>
+                                        <p class="text-green-400 font-medium truncate">Verificado con Google</p>
+                                    </div>
+                                </div>
+                                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 p-6 rounded-2xl bg-gradient-to-r from-rose-900/30 to-red-900/30 border border-rose-500/20 relative">
+                            <div class="absolute top-4 left-4 text-6xl text-white/10 font-serif leading-none">"</div>
+                            <p class="relative z-10 text-rose-100/80 leading-relaxed italic text-center">
+                                Bienvenido a BUHO Chat, tu asistente virtual de la Universidad Nacional de Colombia. 
+                                Estoy aquí para ayudarte con información sobre admisiones, matrículas, programas académicos y más.
+                            </p>
+                        </div>
+                    </div>
+              
+                    <div data-content="activity" class="tab-content transition-opacity duration-300 hidden">
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-semibold text-white mb-4">Actividad Reciente</h3>
+                            <div id="activity-list" class="space-y-3">
+                                <div class="flex items-center justify-center h-48 text-white/30">
+                                    <div class="text-center">
+                                        <div class="w-16 h-16 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center mb-4 mx-auto animate-spin-slow">
+                                            <div class="w-2 h-2 bg-white/40 rounded-full"></div>
+                                        </div>
+                                        <p>Cargando actividad...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div data-content="settings" class="tab-content transition-opacity duration-300 hidden">
+                        <div class="space-y-6">
+                            <h3 class="text-lg font-semibold text-white mb-4">Configuración de la Cuenta</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10">
+                                    <div class="flex items-center gap-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-rose-300"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                                        <div>
+                                            <p class="text-white font-medium">Notificaciones</p>
+                                            <p class="text-xs text-white/40">Recibir alertas del chat</p>
+                                        </div>
+                                    </div>
+                                    <div class="w-12 h-6 bg-rose-500/50 rounded-full relative cursor-pointer">
+                                        <div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10">
+                                    <div class="flex items-center gap-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-rose-300"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                                        <div>
+                                            <p class="text-white font-medium">Tema Oscuro</p>
+                                            <p class="text-xs text-white/40">Interfaz con colores oscuros</p>
+                                        </div>
+                                    </div>
+                                    <div class="w-12 h-6 bg-rose-500/50 rounded-full relative cursor-pointer">
+                                        <div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="pt-6 border-t border-white/10">
+                                <button id="logout-btn-settings" class="w-full py-3 rounded-xl bg-red-500/20 border border-red-500/30 text-red-300 font-medium hover:bg-red-500/30 transition-colors flex items-center justify-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                                    Cerrar Sesión
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js';
+        import { getAuth, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js';
+
+        const firebaseConfig = {
+            apiKey: "{{ firebase_api_key }}",
+            authDomain: "{{ firebase_project_id }}.firebaseapp.com",
+            projectId: "{{ firebase_project_id }}",
+            storageBucket: "{{ firebase_project_id }}.firebasestorage.app",
+            appId: "{{ firebase_app_id }}",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        async function loadUserData() {
+            try {
+                const response = await fetch('/api/check-session');
+                const data = await response.json();
+                
+                if (data.authenticated && data.user) {
+                    const user = data.user;
+                    const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=7b3238&color=fff`;
+                    
+                    document.getElementById('profile-avatar').src = user.picture || defaultAvatar;
+                    document.getElementById('profile-name').textContent = user.name || 'Usuario';
+                    document.getElementById('profile-email').textContent = user.email || 'No disponible';
+                    
+                    window.userAvatarUrl = user.picture || defaultAvatar;
+                } else {
+                    window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('Error al cargar datos del usuario:', error);
+                window.location.href = '/';
+            }
+        }
+
+        async function loadConversationsCount() {
+            try {
+                const response = await fetch('/api/conversations');
+                if (response.ok) {
+                    const conversations = await response.json();
+                    document.getElementById('stat-conversations').textContent = conversations.length;
+                    
+                    const activityList = document.getElementById('activity-list');
+                    if (conversations.length > 0) {
+                        activityList.innerHTML = conversations.slice(0, 5).map(conv => `
+                            <div class="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/10">
+                                <div class="p-2 rounded-lg bg-rose-500/20 text-rose-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-white text-sm font-medium truncate">${conv.title || 'Conversación'}</p>
+                                    <p class="text-white/40 text-xs">${conv.messageCount || 0} mensajes</p>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        activityList.innerHTML = `
+                            <div class="text-center py-8 text-white/40">
+                                <p>No tienes conversaciones aún</p>
+                                <a href="/#chat" class="text-rose-400 hover:text-rose-300 mt-2 inline-block">Iniciar una conversación</a>
+                            </div>
+                        `;
+                    }
+                }
+            } catch (error) {
+                console.error('Error al cargar conversaciones:', error);
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                await signOut(auth);
+                await fetch('/api/logout', { method: 'POST' });
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserData();
+            loadConversationsCount();
+            
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+            document.getElementById('logout-btn-settings').addEventListener('click', handleLogout);
+            
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const tabIndicators = document.querySelectorAll('.tab-indicator');
+
+            const activateTab = (activeTabName) => {
+                tabContents.forEach(content => content.classList.add('hidden'));
+                tabIndicators.forEach(indicator => indicator.classList.add('hidden'));
+                tabButtons.forEach(button => {
+                    button.classList.remove('text-white');
+                    button.classList.add('text-white/40', 'hover:text-white/70');
+                });
+
+                const selectedContent = document.querySelector(`[data-content="${activeTabName}"]`);
+                const selectedIndicator = document.querySelector(`[data-tab-indicator="${activeTabName}"]`);
+                const selectedButton = document.querySelector(`[data-tab="${activeTabName}"]`);
+
+                if (selectedContent) selectedContent.classList.remove('hidden');
+                if (selectedIndicator) selectedIndicator.classList.remove('hidden');
+                if (selectedButton) {
+                    selectedButton.classList.add('text-white');
+                    selectedButton.classList.remove('text-white/40', 'hover:text-white/70');
+                }
+            };
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const tabName = event.currentTarget.getAttribute('data-tab');
+                    activateTab(tabName);
+                });
+            });
+
+            const profileCard = document.getElementById('profile-card');
+            if (profileCard) {
+                setTimeout(() => {
+                    profileCard.style.opacity = '1';
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>

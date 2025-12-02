@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNAL Chat - Asistente Virtual</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        /* Regla para asegurar que el perfil de escritorio se oculte si así se desea */
+        .force-hidden-desktop {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div id="login-overlay" class="hidden">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
+            <div class="text-center mb-8">
+                <img src="https://i.ibb.co/RGwxnyLv/BUHO.png" alt="Logo" class="h-20 w-auto mx-auto mb-4">
+                <h2 class="text-3xl font-bold text-gray-800">Bienvenido</h2>
+                <p class="text-gray-600 mt-2">Inicia sesión con tu cuenta institucional</p>
+                <p class="text-sm text-[#7b3238] font-semibold mt-2">Solo @unal.edu.co</p>
+            </div>
+            
+            <button id="google-login-btn" class="w-full bg-white border-2 border-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-3">
+                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                Iniciar sesión con Google
+            </button>
+            
+            <div id="login-error" class="hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p class="text-red-700 text-sm text-center"></p>
+            </div>
+            
+            <div id="login-loading" class="hidden mt-4 text-center">
+                <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#7b3238] border-r-transparent"></div>
+                <p class="text-gray-600 mt-2">Verificando...</p>
+            </div>
+        </div>
+    </div>
+
+    <header id="main-header" class="p-4 border-b border-gray-200 transition-transform duration-300 ease-in-out bg-white/90 backdrop-blur-md z-40">
+        <div class="container mx-auto flex justify-between items-center">
+            <img src="https://i.ibb.co/RGwxnyLv/BUHO.png" alt="Logo" class="h-12 w-auto">
+            
+            <div id="user-info-desktop" class="hidden items-center gap-3 relative">
+                <img id="user-avatar-desktop" src="" alt="Avatar" class="w-10 h-10 rounded-full border-2 border-[#7b3238] hover:border-red-500 cursor-pointer transition-colors user-avatar-clickable">
+
+                <div id="user-dropdown-desktop" class="hidden absolute top-full right-0 mt-4 w-72 bg-white rounded-xl shadow-2xl z-50 overflow-hidden border border-gray-100">
+                    <div class="p-4 border-b border-gray-200 bg-gradient-to-br from-[#7b3238] to-[#9b4248] text-white">
+                        <div class="flex items-center gap-3">
+                            <img id="dropdown-avatar-desktop" src="" alt="Avatar" class="w-12 h-12 rounded-full border-2 border-white/50">
+                            <div class="flex-1 min-w-0">
+                                <p id="dropdown-name-desktop" class="font-semibold truncate text-lg"></p>
+                                <p id="dropdown-email-desktop" class="text-xs opacity-90 truncate font-light"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="py-2">
+                        <a href="/account" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-gray-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            <span class="text-sm font-medium">Mi Cuenta</span>
+                        </a>
+                        <button id="logout-btn-desktop" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors text-left group">
+                            <svg class="text-gray-400 group-hover:text-red-600 transition-colors" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                            <span class="text-sm font-medium text-gray-700 group-hover:text-red-600 transition-colors">Cerrar Sesión</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="user-info-mobile" class="flex md:hidden items-center gap-2 relative">
+                <img id="user-avatar-mobile" src="" alt="Avatar" class="w-10 h-10 rounded-full border-2 border-[#7b3238] user-avatar-clickable">
+                
+                <div id="user-dropdown-mobile" class="hidden">
+                    <div class="p-4 border-b border-gray-200 bg-gradient-to-br from-[#7b3238] to-[#9b4248] text-white">
+                        <div class="flex items-center gap-3">
+                            <img id="dropdown-avatar-mobile" src="" alt="Avatar" class="w-12 h-12 rounded-full border-2 border-white">
+                            <div class="flex-1 min-w-0">
+                                <p id="dropdown-name-mobile" class="font-semibold truncate"></p>
+                                <p id="dropdown-email-mobile" class="text-xs opacity-90 truncate"></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="py-2">
+                        <a href="/account" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <span class="text-sm font-medium text-gray-700">Mi Cuenta</span>
+                        </a>
+                        <button id="logout-btn-mobile" class="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors text-left">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                            <span class="text-sm font-medium text-red-600">Cerrar Sesión</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="p-8 pb-28">
+            <div class="text-center">
+                <h2 class="text-4xl md:text-6xl font-bold">EL CHAT PARA <span class="text-[#7b3238]">TODO</span></h2>
+                <p class="text-gray-600 mt-4 text-lg">Un espacio con todo reunido de manera sencilla</p>
+            </div>
+        </section>
+
+        <section id="what" class="p-8 pb-28">
+            <div class="max-w-3xl mx-auto text-center">
+                <h3 class="text-3xl font-bold mb-8">¿QUÉ ES?</h3>
+                <div class="text-gray-700 space-y-4">
+                    <p>Un asistente virtual inteligente para la Universidad Nacional de Colombia que te ayuda con información institucional actualizada.</p>
+                    <p>Obtén respuestas rápidas sobre admisiones, matrículas, programas académicos, calendarios y mucho más, todo en un solo lugar.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="chat" class="w-full h-full flex items-center justify-center p-4 md:p-8">
+            <div class="chat-section-container">
+                <nav id="chat-sidebar" class="chat-sidebar">
+                    <div class="chat-sidebar-header">
+                        <h1 class="chat-sidebar-title">BUHO CHAT</h1>
+                    </div>
+
+                    <button id="new-conversation-btn" class="chat-new-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        New chat
+                    </button>
+
+                    <div class="chat-conversations-header">
+                        <h2 class="chat-conversations-title">Tus conversaciones</h2>
+                    </div>
+                    
+                    <div id="conversations-list" class="chat-conversations-list"></div>
+                </nav>
+
+                <main class="chat-main">
+                    <button class="md:hidden p-3 text-gray-600 fixed top-20 left-4 z-30 bg-white rounded-full shadow-lg" id="menu-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+
+                    <div id="chat-container" class="chat-messages-container">
+                        <div class="chat-message-bot message-animate">
+                            <img src="https://i.ibb.co/chwxgYhY/New-Project-1.png" alt="Bot Avatar" class="chat-avatar">
+                            <div class="message-bubble">
+                                <p class="bot-name">BUHO</p>
+                                <p>¡Hola! Soy tu asistente virtual de la UNAL. ¿En qué puedo ayudarte hoy?</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-container">
+                        <div class="chat-input-wrapper">
+                            <form id="chat-form" class="relative">
+                                <input type="text" id="chat-input" class="chat-input" placeholder="Escribe tu consulta..." autocomplete="off">
+                                <button type="submit" class="chat-submit-btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 16.571V11.5a1 1 0 012 0v5.071a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <h3 id="current-conversation-title" class="hidden">Nueva conversación</h3>
+                </main>
+            </div>
+        </section>
+    </main>
+
+    <nav id="mobile-nav" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[9999]">
+        <div class="flex items-center gap-1 bg-white/20 backdrop-blur-lg border border-white/30 p-1.5 rounded-full shadow-lg">
+            <a href="#home" class="nav-link w-full text-center py-2 px-6 rounded-full text-sm font-semibold text-gray-700 transition-colors duration-300">HOME</a>
+            <a href="#what" class="nav-link w-full text-center py-2 px-6 rounded-full text-sm font-semibold text-gray-700 transition-colors duration-300">WHAT</a>
+            <a href="#chat" class="nav-link w-full text-center py-2 px-6 rounded-full text-sm font-semibold text-gray-700 transition-colors duration-300 bg-white shadow-sm">CHAT</a>
+        </div>
+    </nav>
+    <script type="module">
+        import AuthViewModel from '{{ url_for("static", filename="js/auth.js") }}';
+        import ChatViewModel from '{{ url_for("static", filename="js/chat.js") }}';
+        import NavigationViewModel from '{{ url_for("static", filename="js/navigation.js") }}';
+
+        const firebaseConfig = {
+            apiKey: "{{ firebase_api_key }}",
+            authDomain: "{{ firebase_project_id }}.firebaseapp.com",
+            projectId: "{{ firebase_project_id }}",
+            storageBucket: "{{ firebase_project_id }}.firebasestorage.app",
+            appId: "{{ firebase_app_id }}",
+        };
+
+        window.authViewModel = new AuthViewModel(firebaseConfig);
+        window.chatViewModel = new ChatViewModel();
+        window.navigationViewModel = new NavigationViewModel();
+    </script>
+</body>
+</html>
