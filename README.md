@@ -1,4 +1,4 @@
-# BUHO Chat - Asistente Virtual UNAL
+# ![BUHO](https://i.ibb.co/RGwxnyLv/BUHO.png) - Asistente Virtual UNAL
 
 Aplicación web de chatbot para la Universidad Nacional de Colombia con autenticación de Google restringida a cuentas `@unal.edu.co`, interfaz de chat en tiempo real con IA, y gestión de perfil de usuario.
 
