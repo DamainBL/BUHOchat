@@ -105,68 +105,7 @@ OLLAMA_URL="your-ngrok-url"
 GROQ_API_KEY="your-GROQ-api-ke"
 ```
 
-### Paso 6: Configurar Ollama (Modelo de IA)
-
-#### 6.1 Instalar Ollama
-
-Descarga e instala Ollama desde [ollama.ai](https://ollama.ai/):
-
-```bash
-# En macOS/Linux
-curl -fsSL https://ollama.ai/install.sh | sh
-
-# En Windows
-# Descarga el instalador desde https://ollama.ai/download
-```
-
-#### 6.2 Crear el Modelo Personalizado
-
-1. Crea un archivo llamado `Modelfile` con el siguiente contenido:
-
-```
-FROM gemma3:4b
-
-SYSTEM """
-Eres BUHO, el asistente virtual oficial de la Universidad Nacional de Colombia.
-Tu rol es ayudar a estudiantes, aspirantes y personal con información sobre:
-- Admisiones y procesos de inscripción
-- Matrículas y pagos
-- Programas académicos (pregrado y posgrado)
-- Calendario académico
-- Servicios estudiantiles
-- Información institucional
-
-Responde siempre de manera:
-- Clara y concisa
-- Formal pero amigable
-- Citando fuentes oficiales cuando sea posible
-- En español
-
-Si no tienes información actualizada, indica que el usuario debe verificar en los canales oficiales de la UNAL.
-"""
-```
-
-2. Crea el modelo:
-
-```bash
-ollama create gemma3-unal -f Modelfile
-```
-
-3. Verifica que el modelo esté disponible:
-
-```bash
-ollama list
-```
-
-#### 6.3 Iniciar el Servidor Ollama
-
-```bash
-ollama serve
-```
-
-Deja esta terminal abierta. Ollama se ejecutará en `http://localhost:11434`.
-
-### Paso 7: Ejecutar la Aplicación
+### Paso 6: Ejecutar la Aplicación
 
 En una nueva terminal (con el entorno virtual activado):
 
@@ -208,12 +147,6 @@ buho-chat-unal/
 
 ## Solución de Problemas
 
-### Error: "No se puede conectar a Ollama"
-
-- Verifica que Ollama esté corriendo: `ollama serve`
-- Comprueba que el modelo existe: `ollama list`
-- Verifica la URL en `.env`: `OLLAMA_URL=http://localhost:11434`
-
 ### Error: "Firebase credentials not found"
 
 - Asegúrate de que `serviceAccountKey.json` esté en la raíz del proyecto
@@ -228,24 +161,6 @@ buho-chat-unal/
 
 - Limpia la caché del navegador (Ctrl+Shift+R)
 - Verifica que Flask esté sirviendo archivos estáticos correctamente
-
----
-
-## Despliegue en Producción
-
-Para desplegar en un servidor de producción, considera:
-
-1. Usar **Gunicorn** como servidor WSGI:
-   ```bash
-   pip install gunicorn
-   gunicorn -w 4 -b 0.0.0.0:5000 app:app
-   ```
-
-2. Configurar un proxy inverso con **Nginx**
-
-3. Usar **HTTPS** con certificados SSL
-
-4. Configurar variables de entorno del sistema en lugar de `.env`
 
 ---
 
@@ -270,16 +185,3 @@ Para desplegar en un servidor de producción, considera:
 4. Push a la rama: `git push origin mi-feature`
 5. Abre un Pull Request
 
----
-
-## Licencia
-
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
-
----
-
-## Contacto
-
-Universidad Nacional de Colombia - Proyecto BUHO Chat
-
-Para soporte técnico o preguntas, abre un issue en el repositorio.
