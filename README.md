@@ -24,7 +24,7 @@ Antes de comenzar, asegúrate de tener instalado:
 ### Paso 1: Clonar el Repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/buho-chat-unal.git
+git clone https://github.com/DamainBL/BUHOchat.git
 cd buho-chat-unal
 ```
 
