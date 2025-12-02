@@ -97,17 +97,12 @@ cp .env.example .env
 2. Edita el archivo `.env` con tus valores:
 
 ```env
-# Clave secreta para sesiones Flask (genera una cadena aleatoria)
-SESSION_SECRET=tu-clave-secreta-muy-segura-aqui
-
-# Credenciales de Firebase (del paso 4.2)
-FIREBASE_API_KEY=AIzaSy...tu-api-key
-FIREBASE_PROJECT_ID=tu-proyecto-firebase
-FIREBASE_APP_ID=1:123456789:web:abcdef123456
-
-# Configuración de Ollama
-OLLAMA_URL=http://localhost:11434
-OLLAMA_MODEL=gemma3-unal
+SESSION_SECRET="your-session-secret-key-here"
+FIREBASE_API_KEY="your-firebase-api-key"
+FIREBASE_APP_ID="your-firebase-app-id"
+FIREBASE_PROJECT_ID="your-firebase-project-id"
+OLLAMA_URL="your-ngrok-url"
+GROQ_API_KEY="your-GROQ-api-ke"
 ```
 
 ### Paso 6: Configurar Ollama (Modelo de IA)
