@@ -164,19 +164,6 @@ buho-chat-unal/
 
 ---
 
-## Seguridad
-
-- Nunca subas `.env` o `serviceAccountKey.json` a repositorios públicos
-- Agrega estos archivos a `.gitignore`:
-  ```
-  .env
-  serviceAccountKey.json
-  ```
-- Usa contraseñas seguras para `SESSION_SECRET`
-- Mantén las dependencias actualizadas
-
----
-
 ## Contribuir
 
 1. Haz fork del repositorio
