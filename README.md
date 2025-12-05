@@ -117,7 +117,9 @@ La aplicación estará disponible en: **http://localhost:5000**
 
 ---
 
-https://github.com/DamainBL/BUHOchat/blob/main/video/tutorial%20instalacion.mp4
+[![Mira el video](https://raw.githubusercontent.com/username/repository/branch/path/to/thumbnail.jpg)](https://github.com/DamainBL/BUHOchat/blob/main/video/tutorial%20instalacion.mp4)
+
+
 
 ---
 ## Estructura del Proyecto
