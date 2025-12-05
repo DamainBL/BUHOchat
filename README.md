@@ -117,7 +117,7 @@ La aplicación estará disponible en: **http://localhost:5000**
 
 ---
 
-[![Haz clic para ver el video]([https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg](https://github.com/DamainBL/BUHOchat/blob/main/video/tutorial.jpg))](https://youtu.be/anawMro_EUM)
+[![Haz clic para ver el video tutorial]([https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg](https://github.com/DamainBL/BUHOchat/blob/main/video/tutorial.jpg))](https://youtu.be/anawMro_EUM)
 
 
 
